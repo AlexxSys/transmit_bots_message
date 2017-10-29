@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+			http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+	<display-name>Goodbye XML Application</display-name>
+
+	<session-config>
+		<session-timeout>600</session-timeout>
+	</session-config>
+
+	<!-- 
+	Here you can declare error pages if you want:
+	
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/uncaughtException</location>
+	</error-page>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/resourceNotFound</location>
+	</error-page>
+ 	-->
+ 
+	<welcome-file-list>  
+    	<welcome-file>index</welcome-file>  
+	</welcome-file-list>  
+</web-app>
