@@ -31,7 +31,7 @@ public class RequestController {
         this.configTransferSystem = configTransferSystem;
     }
 
-    @RequestMapping(path = "/transfer_system_new/**", method = RequestMethod.POST)
+    @RequestMapping(path = "/transfer_system_create/**", method = RequestMethod.POST)
     public void putRequest(HttpServletRequest HttpRequest,
                            HttpServletResponse HttpResponse,
                            @RequestHeader  Map<String, String> headers,
@@ -89,6 +89,11 @@ public class RequestController {
 
         if (request != null){
             RemoteSystem.fillHttpResponseByRequestData(servletResponse, request);
+            repositoryRequest.delete(request);
+
+            History history = repositoryHistory.getOne(request.getId());
+            history.setStatus(History.STATUS.send);
+            repositoryHistory.save(history);
         }
 
     }
