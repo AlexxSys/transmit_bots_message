@@ -2,20 +2,23 @@ package ru.alexxsys.transmit_bots_message.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.web.context.WebApplicationContext;
 
 //@Service
 //@Scope(WebApplicationContext.)
 @Configuration
-public class Config {
+@Scope(value = "singleton")
+public class ConfigTransferSystem {
 
     private String pathRemoteSystem;
     private String login;
     private String password;
     private boolean enableAutoSend;
 
-    public Config() {
+    public ConfigTransferSystem() {
     }
-    public Config(String pathRemoteSystem, String login, String password, boolean enableAutoSend) {
+    public ConfigTransferSystem(String pathRemoteSystem, String login, String password, boolean enableAutoSend) {
         this.pathRemoteSystem = pathRemoteSystem;
         this.login = login;
         this.password = password;
@@ -34,9 +37,16 @@ public class Config {
     public boolean isEnableAutoSend() {
         return enableAutoSend;
     }
-
-    @Bean()
-    public Config getBean(){
-        return new Config("localhost", "", "", true);
+    public void setPathRemoteSystem(String pathRemoteSystem) {
+        this.pathRemoteSystem = pathRemoteSystem;
+    }
+    public void setLogin(String login) {
+        this.login = login;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public void setEnableAutoSend(boolean enableAutoSend) {
+        this.enableAutoSend = enableAutoSend;
     }
 }

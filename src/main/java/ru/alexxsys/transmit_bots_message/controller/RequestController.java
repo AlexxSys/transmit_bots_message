@@ -2,7 +2,7 @@ package ru.alexxsys.transmit_bots_message.controller;
 
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import ru.alexxsys.transmit_bots_message.configuration.Config;
+import ru.alexxsys.transmit_bots_message.configuration.ConfigTransferSystem;
 import ru.alexxsys.transmit_bots_message.entity.History;
 import ru.alexxsys.transmit_bots_message.entity.Request;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +21,17 @@ import java.util.stream.Collectors;
 public class RequestController {
     private final RequestRepository repositoryRequest;
     private final HistoryRepository repositoryHistory;
-    private final Config config;
+    private final ConfigTransferSystem configTransferSystem;
     private static final int sizeIO = 1024;
 
     @Autowired
-    private RequestController(RequestRepository repositoryRequest, HistoryRepository repositoryHistory, Config config) {
+    private RequestController(RequestRepository repositoryRequest, HistoryRepository repositoryHistory, ConfigTransferSystem configTransferSystem) {
         this.repositoryRequest = repositoryRequest;
         this.repositoryHistory = repositoryHistory;
-        this.config = config;
+        this.configTransferSystem = configTransferSystem;
     }
 
-    @RequestMapping(path = "/botsystem/**", method = RequestMethod.POST)
+    @RequestMapping(path = "/transfer_system_new/**", method = RequestMethod.POST)
     public void putRequest(HttpServletRequest HttpRequest,
                            HttpServletResponse HttpResponse,
                            @RequestHeader  Map<String, String> headers,
@@ -40,7 +40,7 @@ public class RequestController {
         UUID uuid = UUID.randomUUID();
 
         String patchFrom = HttpRequest.getRemoteHost();
-        String patch = HttpRequest.getRequestURI();
+        String patch = HttpRequest.getRequestURI().substring("/transfer_system_new".length());
 
         byte[] body = null;
         if(headers.get("content-type").contains("multipart/form-data;")) {
@@ -60,13 +60,16 @@ public class RequestController {
         repositoryHistory.save(history);
 
 
-        if (config.isEnableAutoSend()){
+        if (configTransferSystem.isEnableAutoSend()){
             try {
-                HttpURLConnection sendRemoteSystem = RemoteSystem.sendRequest(request, config.getPathRemoteSystem());
+                HttpURLConnection sendRemoteSystem = RemoteSystem.sendRequest(request, configTransferSystem.getPathRemoteSystem(), configTransferSystem.getLogin(), configTransferSystem.getPassword());
                 if (sendRemoteSystem.getResponseCode()==200) {
                     history.setStatus(History.STATUS.send);
                     repositoryHistory.save(history);
                     repositoryRequest.delete(request);
+                }else{
+                    history.setStatus(History.STATUS.error);
+                    repositoryHistory.save(history);
                 }
             } catch (Exception e) {
                 history.setStatus(History.STATUS.error);
@@ -79,7 +82,7 @@ public class RequestController {
 
     }
 
-    @RequestMapping(path = "/remotesystem/givenew", method = RequestMethod.POST)
+    @RequestMapping(path = "/transfer_system_givenew", method = RequestMethod.POST)
     public void takeRequest(HttpServletResponse servletResponse){
 
         Request request = repositoryRequest.findTop1ByTimeStampNotNullOrderByTimeStamp();

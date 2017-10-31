@@ -13,7 +13,6 @@ public class History {
     public static enum STATUS {wait, error, send};
 
     @Id
-    @GeneratedValue
     private UUID id;
     private Date dateTime;
     private String patchFrom;

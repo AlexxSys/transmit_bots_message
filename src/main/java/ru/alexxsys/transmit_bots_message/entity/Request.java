@@ -7,7 +7,6 @@ import java.util.*;
 @Table(name = "requests")
 public class Request {
     @Id
-    @GeneratedValue
     private UUID id;
     private Long timeStamp;
     private String patchFrom;
@@ -22,6 +21,7 @@ public class Request {
     @MapKeyColumn(name = "key")
     @Column(name = "value")
     private Map<String, String> parametrs;
+    @Lob
     private byte[] body;
 
     public Request() {
