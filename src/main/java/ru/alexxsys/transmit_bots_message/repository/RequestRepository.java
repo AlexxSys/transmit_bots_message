@@ -12,6 +12,7 @@ import java.util.UUID;
 public interface RequestRepository extends JpaRepository<Request, UUID> {
 
     Request findTop1ByTimeStampNotNullOrderByTimeStamp();
+    Request findTop1ByPatchEndsWithOrderByTimeStamp(String PatchEndsWith);
 
 //    @Query("select b from requests b where b.name = :name")
 //    Request dfgdfg(@Param("name") String name);

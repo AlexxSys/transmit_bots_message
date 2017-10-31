@@ -31,7 +31,7 @@ public class RequestController {
         this.configTransferSystem = configTransferSystem;
     }
 
-    @RequestMapping(path = "/transfer_system_create/**", method = RequestMethod.POST)
+    @RequestMapping(path = "/createnew/**", method = RequestMethod.POST)
     public void putRequest(HttpServletRequest HttpRequest,
                            HttpServletResponse HttpResponse,
                            @RequestHeader  Map<String, String> headers,
@@ -40,7 +40,7 @@ public class RequestController {
         UUID uuid = UUID.randomUUID();
 
         String patchFrom = HttpRequest.getRemoteHost();
-        String patch = HttpRequest.getRequestURI().substring("/transfer_system_new".length());
+        String patch = HttpRequest.getRequestURI().substring("/createnew".length());
 
         byte[] body = null;
         if(headers.get("content-type").contains("multipart/form-data;")) {
@@ -82,10 +82,16 @@ public class RequestController {
 
     }
 
-    @RequestMapping(path = "/transfer_system_givenew", method = RequestMethod.POST)
-    public void takeRequest(HttpServletResponse servletResponse){
+    @RequestMapping(path = "/givenew", method = RequestMethod.POST)
+    public void takeRequest(HttpServletResponse servletResponse,
+                            @RequestParam(value="patch_bot", required=false) String patch_bot){
 
-        Request request = repositoryRequest.findTop1ByTimeStampNotNullOrderByTimeStamp();
+        Request request = null;
+        if (patch_bot != null){
+            request = repositoryRequest.findTop1ByPatchEndsWithOrderByTimeStamp(patch_bot);
+        }else {
+            request = repositoryRequest.findTop1ByTimeStampNotNullOrderByTimeStamp();
+        }
 
         if (request != null){
             RemoteSystem.fillHttpResponseByRequestData(servletResponse, request);
